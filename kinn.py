@@ -11,21 +11,22 @@ while True:
     # User input for select and install mod
     modsel = input('Enter mod name for automatic install: ').lower()
     
-    # Create URL for mod install
-    url = f'https://raw.githubusercontent.com/unnamed-aka/mod-repo/main/{modsel}.zip'
-    
-    # Get status code
-    r = (requests.get(f'https://github.com/unnamed-aka/mod-repo/blob/main/{modsel}.zip')).status_code
-    
-    # Check status code
-    if r != 404:
+    # Check mod exist and index 
+    url1 = f'https://raw.githubusercontent.com/unnamed-aka/mod-index/main/{modsel}.txt'
+    if (requests.get(url1)).status_code == 404:
+        print('Error: mod not exists')
+        continue
+    else:
+        # Get mod index
+        modindex = (requests.get(url1)).text
+        
         # Delete old mod if exists
-        if os.path.exists(f'C:/Users/{user}/AppData/Roaming/KinitoPET/mods/{modsel}.zip'):
-            os.remove(f'C:/Users/{user}/AppData/Roaming/KinitoPET/mods/{modsel}.zip')
-            
-        # Install new mod
+        if os.path.exists(f'C:/Users/{user}/AppData/Roaming/KinitoPET/mods/{modindex}'):
+            os.remove(f'C:/Users/{user}/AppData/Roaming/KinitoPET/mods/{modindex}')
+        
+        # Download and install mod
+        url = f'https://raw.githubusercontent.com/unnamed-aka/mod-repo/main/{modindex}'
         wget.download(url,out = f'C:/Users/{user}/AppData/Roaming/KinitoPET/mods')
         print('\nDone')
-    else:
-        # Error
-        print(f'Error: {modsel}.zip not found')
+    
+    
